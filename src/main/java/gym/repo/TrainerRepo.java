@@ -1,5 +1,6 @@
 package gym.repo;
 import gym.dto.TraineeResponse;
+import gym.dto.TrainerRequest;
 import gym.dto.TrainerResponse;
 import gym.model.Trainee;
 import gym.model.Trainer;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface TrainerRepo extends JpaRepository<Trainer,Long> {
-    @Query("select trainer.id, trainer.specialization.name, trainer.user.userName from Trainer trainer")
+    @Query("select trainer.id,trainer.user.firstName, trainer.specialization.specializationName from Trainer trainer")
     List<TrainerResponse> findAllTrainers();
     @Query("SELECT t FROM Trainer t JOIN t.user u WHERE u.userName = :username")
     Trainer findTrainerByUsername(@Param("username") String username);

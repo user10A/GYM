@@ -4,6 +4,7 @@ import gym.dto.TrainingRequest;
 import gym.model.Training;
 import gym.service.TrainingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @RequestMapping("/training")
 @RequiredArgsConstructor
 public class TrainingApi {
+    @Autowired
     private TrainingService trainingService;
     @GetMapping
     public List<Training> getAllTrainings(){
