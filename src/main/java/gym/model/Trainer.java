@@ -15,9 +15,10 @@ public class Trainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Specialization specialization;
-    @OneToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL) @JoinColumn (name = "user_id")
+    @OneToOne
+    @JoinColumn (name = "trainingType_id")
+    private TrainingType trainingType;
+    @OneToOne (fetch = FetchType.LAZY) @JoinColumn (name = "user_id")
     private User user;
     @ManyToMany
     private List<Trainee>trainerTrainees;

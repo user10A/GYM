@@ -1,19 +1,14 @@
 package gym.service.Impl;
-
 import gym.dto.*;
 import gym.model.Trainee;
 import gym.model.User;
 import gym.repo.TraineeRepo;
 import gym.service.TraineeService;
 import gym.service.UserService;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -77,7 +72,6 @@ public class TraineeServiceImpl implements TraineeService {
                 trainee.getUser().isActive()
         );
     }
-
     @Override
     public SimpleResponse delete(long id) {
         traineeRepo.deleteById(id);

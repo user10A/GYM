@@ -1,8 +1,7 @@
 package gym.service.Impl;
 import gym.dto.*;
-import gym.model.Specialization;
-import gym.model.Trainee;
 import gym.model.Trainer;
+import gym.model.TrainingType;
 import gym.model.User;
 import gym.repo.TrainerRepo;
 import gym.service.TrainerService;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -34,13 +32,17 @@ public class TrainerServiceImpl implements TrainerService {
         User user = new User();
         user.setFirstName(trainerRequest.getFirstName());
         user.setLastName(trainerRequest.getLastName());
+
+        TrainingType trainingType = new TrainingType();
+        trainingType.setName(trainerRequest.getTrainingType());
         user.setPassword(userRepo.generatePassword());
         user.setUserName(userRepo.generateUsername(trainerRequest.getFirstName(),trainerRequest.getLastName()));
         userRepo.save(user);
 
         Trainer trainer1 = Trainer.builder()
-                .user(user)
+                .user(user).trainingType(trainingType)
                 .build();
+        trainer1.setTrainingType(trainingType);
         trainerRepo.save(trainer1);
         return new UserDto(
                 trainer1.getUser().getUserName(),
@@ -65,7 +67,7 @@ public class TrainerServiceImpl implements TrainerService {
                trainer.getId(),
                trainer.getUser().getFirstName(),
                trainer.getUser().getLastName(),
-               trainer.getSpecialization(),
+               trainer.getTrainingType(),
                trainer.getUser().getUserName(),
                trainer.getUser().getPassword(),
                trainer.getUser().isActive()

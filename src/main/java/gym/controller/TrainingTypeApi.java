@@ -1,33 +1,29 @@
 package gym.controller;
-
 import gym.dto.SimpleResponse;
-import gym.dto.TrainerRequest;
-import gym.dto.TrainerResponse;
-import gym.dto.UserDto;
 import gym.model.TrainingType;
 import gym.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("trainingType")
 @RequiredArgsConstructor
 public class TrainingTypeApi {
+
+    @Autowired
     private TrainingTypeService trainingTypeService;
+
     @GetMapping
     public List<TrainingType> getAllTrainers(){
         return trainingTypeService.getAllTrainingType();
     }
 
-
     @PostMapping("/create")
     public SimpleResponse save(@RequestBody TrainingType trainingType){
         return trainingTypeService.save(trainingType);
     }
-
-
     @DeleteMapping("/{id}")
     public SimpleResponse delete(@PathVariable  long id){
         return trainingTypeService.delete(id);

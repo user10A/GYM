@@ -17,7 +17,7 @@ public interface TrainingRepo extends JpaRepository<Training,Long > {
     @Query("SELECT t FROM Training t WHERE t.duration = :duration AND t.date = :date")
     Training findTrainingByDurationAndDate(@Param("duration") int duration, @Param("date") LocalDate date);
 
-    @Query("SELECT t FROM Training t  WHERE t.trainingName = : name")
+    @Query("SELECT t FROM Training t  WHERE t.trainingName = :name")
     Training findByTrainingName(@Param("name") String name);
 
 

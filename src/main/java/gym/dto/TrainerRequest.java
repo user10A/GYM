@@ -7,6 +7,6 @@ import java.time.LocalDate;
 public class TrainerRequest {
     private String firstName;
     private String lastName;
-    private String specializationName;
+    private String trainingType;
 
 }

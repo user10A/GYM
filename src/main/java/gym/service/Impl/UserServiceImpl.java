@@ -1,14 +1,9 @@
 package gym.service.Impl;
-
-
-import gym.dto.SimpleResponse;
 import gym.model.User;
 import gym.repo.UserRepo;
 import gym.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;

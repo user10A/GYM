@@ -14,10 +14,10 @@ import java.util.List;
 
 @Repository
 public interface TrainerRepo extends JpaRepository<Trainer,Long> {
-    @Query("select trainer.id,trainer.user.firstName, trainer.specialization.specializationName from Trainer trainer")
+    @Query("select trainer.id,trainer.user.firstName,trainer.user.lastName, trainer.trainingType from Trainer trainer")
     List<TrainerResponse> findAllTrainers();
-    @Query("SELECT t FROM Trainer t JOIN t.user u WHERE u.userName = :username")
-    Trainer findTrainerByUsername(@Param("username") String username);
+    @Query("SELECT t FROM Trainer t JOIN t.user u WHERE u.userName = :userName")
+    Trainer findTrainerByUsername(@Param("userName") String userName);
     @Modifying
     @Query("UPDATE User u SET u.isActive = :isActive WHERE u.userName = :userName")
     void updateIsActivityByUserName(@Param("userName") String userName, @Param("isActive") boolean isActive);

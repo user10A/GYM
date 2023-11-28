@@ -1,5 +1,4 @@
 package gym.service.Impl;
-
 import gym.dto.SimpleResponse;
 import gym.dto.TrainingRequest;
 import gym.model.Trainee;
@@ -39,7 +38,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public ResponseEntity<SimpleResponse> addTraining(TrainingRequest addTrainingRequest) {
-        Trainee trainee = traineeRepo.findTraineeByUsername(addTrainingRequest.getTraineeName());
+        /*Trainee trainee = traineeRepo.findTraineeByUsername(addTrainingRequest.getTraineeName());
         Trainer trainer = trainerRepo.findTrainerByUsername(addTrainingRequest.getTrainerName());
         TrainingType trainingType = trainingTypeRepo.getByName(addTrainingRequest.getTrainingTypeName());
         Training training = new Training();
@@ -48,7 +47,16 @@ public class TrainingServiceImpl implements TrainingService {
         training.setTrainingType(trainingType);
         training.setTrainingName(addTrainingRequest.getTrainingName());
         training.setDate(addTrainingRequest.getDate());
+        trainingRepo.save(training);*/
+        Trainee trainee = traineeRepo.findTraineeByUsername(addTrainingRequest.getTraineeName());
+        Trainer trainer = trainerRepo.findTrainerByUsername(addTrainingRequest.getTrainerName());
+        Training training = new Training();
+        training.setTrainee(trainee);
+        training.setTrainer(trainer);
+        training.setTrainingName(addTrainingRequest.getTrainingName());
+        training.setDate(addTrainingRequest.getDate());
         trainingRepo.save(training);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -62,11 +70,11 @@ public class TrainingServiceImpl implements TrainingService {
     public String update(long id, TrainingRequest training) {
         Trainee trainee = traineeRepo.findTraineeByUsername(training.getTraineeName());
         Trainer trainer = trainerRepo.findTrainerByUsername(training.getTrainerName());
-        TrainingType trainingType = trainingTypeRepo.getByName(training.getTrainingTypeName());
+       // TrainingType trainingType = trainingTypeRepo.getByName(training.getTrainingTypeName());
         Training training1 =trainingRepo.findById(id).orElseThrow(()-> new NoSuchElementException("Training not found by id"+id));
         training1.setTrainingName(training.getTrainingName());
         training1.setDate(training.getDate());
-        training1.setTrainingType(trainingType);
+      //  training1.setTrainingType(trainingType);
         training1.setTrainer(trainer);
         training1.setTrainee(trainee);
         trainingRepo.save(training1);

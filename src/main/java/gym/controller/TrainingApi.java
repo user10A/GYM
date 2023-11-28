@@ -5,23 +5,27 @@ import gym.model.Training;
 import gym.service.TrainingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/training")
 @RequiredArgsConstructor
 public class TrainingApi {
+
     @Autowired
     private TrainingService trainingService;
+
     @GetMapping
     public List<Training> getAllTrainings(){
         return trainingService.getAllTraining();
     }
-    @PostMapping("/create")
-    public void add(@RequestBody TrainingRequest trainingRequest){
-        trainingService.addTraining(trainingRequest);
+    @PostMapping("/add")
+    public ResponseEntity<SimpleResponse> addTraining(@RequestBody TrainingRequest addTrainingRequest) {
+        trainingService.addTraining(addTrainingRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/save")
