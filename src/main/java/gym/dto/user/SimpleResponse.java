@@ -1,9 +1,12 @@
-package gym.dto;
+package gym.dto.user;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
 public class SimpleResponse {
     private HttpStatus status;
     private String message;

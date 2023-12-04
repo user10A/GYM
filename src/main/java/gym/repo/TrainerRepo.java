@@ -1,8 +1,5 @@
 package gym.repo;
-import gym.dto.TraineeResponse;
-import gym.dto.TrainerRequest;
-import gym.dto.TrainerResponse;
-import gym.model.Trainee;
+import gym.dto.trainer.TrainerResponse;
 import gym.model.Trainer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,4 +22,12 @@ public interface TrainerRepo extends JpaRepository<Trainer,Long> {
     @Modifying
     @Query("UPDATE User u SET u.password = :password WHERE u.userName = :userName")
     void updatePasswordTrainer(@Param("userName") String userName ,@Param("password")String password);
+    @Query("Select u  from Trainee u where u.user.userName = :userName and  u.user.password = :password")
+    Trainer trainerPasswordChange(@Param("userName") String userName ,@Param("password")String password);
+//    @Query("select t  from Trainer t")
+//    List<Trainer>getAllByTraineeTrainers();
+    @Query("select t from Trainer t join t.user u where u.userName in :usernames")
+    List<Trainer> findByTrainerUserNameIn(@Param("usernames") List<String> usernames);
+    @Query("SELECT t FROM Trainer t WHERE t.user.isActive = false ")
+    List<Trainer> findActiveTrainer();
 }

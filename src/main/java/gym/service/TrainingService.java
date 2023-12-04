@@ -1,18 +1,18 @@
 package gym.service;
 
-import gym.dto.SimpleResponse;
-import gym.dto.TrainingRequest;
+import gym.dto.trainer.TrainerProfileRes2;
+import gym.dto.training.FreeRequest;
+import gym.dto.training.TrainingResponse;
+import gym.dto.user.SimpleResponse;
+import gym.dto.training.TrainingRequest;
 import gym.model.Training;
-import gym.model.TrainingType;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface TrainingService {
     List<Training> getAllTraining();
-    ResponseEntity<SimpleResponse> addTraining(TrainingRequest addTrainingRequest);
+    SimpleResponse addTraining(TrainingRequest addTrainingRequest);
     SimpleResponse save(Training training);
 
     String update(long id, TrainingRequest training);
@@ -22,5 +22,5 @@ public interface TrainingService {
     Training getByDurationAndDate(int moth ,LocalDate date);
     SimpleResponse delete(long id);
     Training findByTrainingName(String name);
-
+    List<TrainerProfileRes2> getNotAssignedTrainers(FreeRequest freeRequest);
 }

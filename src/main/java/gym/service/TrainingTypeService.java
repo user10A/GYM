@@ -1,8 +1,7 @@
 package gym.service;
 
-import gym.dto.*;
+import gym.dto.user.SimpleResponse;
 import gym.model.TrainingType;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 

@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface TrainingTypeRepo extends JpaRepository<TrainingType,Long> {
     @Query("select t.id,t.name from TrainingType t where t.name =: name")
     TrainingType getByName(@Param("name")String name);
+    @Query("select t.id,t.name from TrainingType t ")
+    TrainingType findTrainingTypes();
 }

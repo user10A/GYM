@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Data
@@ -21,12 +23,13 @@ public class Trainee {
 
     @OneToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL) @JoinColumn (name = "user_id")
     private User user;
-    @ManyToMany(mappedBy = "trainerTrainees")
-    List<Trainer>traineeTrainers;
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST},fetch = FetchType.EAGER)
+    List<Trainer> traineeTrainers;
 
     public Trainee() {
 
     }
+
 
     public Trainee(String address, LocalDate dateOfBirth, User user) {
         this.address = address;

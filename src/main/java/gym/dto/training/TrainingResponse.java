@@ -1,4 +1,4 @@
-package gym.dto;
+package gym.dto.training;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
