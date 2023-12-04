@@ -1,4 +1,4 @@
-package gym.dto;
+package gym.dto.trainer;
 
 import gym.model.TrainingType;
 import lombok.Getter;

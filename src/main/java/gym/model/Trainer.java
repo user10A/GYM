@@ -20,7 +20,7 @@ public class Trainer {
     private TrainingType trainingType;
     @OneToOne (fetch = FetchType.LAZY) @JoinColumn (name = "user_id")
     private User user;
-    @ManyToMany
+    @ManyToMany(mappedBy = "traineeTrainers", fetch = FetchType.EAGER)
     private List<Trainee>trainerTrainees;
     public Trainer() {
     }

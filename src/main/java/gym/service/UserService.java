@@ -1,5 +1,4 @@
 package gym.service;
-import gym.dto.SimpleResponse;
 import gym.model.User;
 
 import java.util.List;

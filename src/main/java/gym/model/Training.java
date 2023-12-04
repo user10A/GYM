@@ -32,14 +32,5 @@ public class Training {
     @JoinColumn(name ="trainingType_id" )
     private TrainingType trainingType ; //trainingType id; отношения
 
-    @PrePersist
-    public void prePersist() {
-        // Установка start на текущую дату
-        this.start = LocalDate.now();
-        // Вычисление даты окончания на основе start и duration
-        if (this.start != null && this.duration > 0) {
-            this.date = this.start.plus(this.duration, ChronoUnit.MONTHS);
-        }
-    }
 
 }

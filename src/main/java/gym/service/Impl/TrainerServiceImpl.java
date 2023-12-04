@@ -1,14 +1,23 @@
 package gym.service.Impl;
-import gym.dto.*;
+import gym.config.jwt.JwtService;
+import gym.dto.trainee.TrainerUpdateRequest;
+import gym.dto.trainer.TrainerProfileRes;
+import gym.dto.trainer.TrainerRequest;
+import gym.dto.trainer.TrainerResponse;
+import gym.dto.user.*;
+import gym.enums.Role;
 import gym.model.Trainer;
 import gym.model.TrainingType;
 import gym.model.User;
 import gym.repo.TrainerRepo;
+import gym.repo.TrainingTypeRepo;
 import gym.service.TrainerService;
 import gym.service.UserService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +25,13 @@ import java.util.NoSuchElementException;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
-    @Autowired
-    private TrainerRepo trainerRepo;
-    @Autowired
-    private UserService userRepo;
+    private final TrainerRepo trainerRepo;
+    private final UserService userRepo;
+    private final TrainingTypeRepo trainingTypeRepo;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<TrainerResponse> getAllTrainers() {
@@ -28,37 +39,55 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public UserDto saveCustomer(TrainerRequest trainerRequest) {
+    public AuthenticationResponse saveCustomer(TrainerRequest trainerRequest) {
         User user = new User();
         user.setFirstName(trainerRequest.getFirstName());
         user.setLastName(trainerRequest.getLastName());
 
-        TrainingType trainingType = new TrainingType();
-        trainingType.setName(trainerRequest.getTrainingType());
         user.setPassword(userRepo.generatePassword());
-        user.setUserName(userRepo.generateUsername(trainerRequest.getFirstName(),trainerRequest.getLastName()));
+        user.setUserName(userRepo.generateUsername(trainerRequest.getFirstName(), trainerRequest.getLastName()));
+        // Сохранение пользователя
         userRepo.save(user);
 
+        // Создание и сохранение объекта TrainingType
+        TrainingType trainingType = new TrainingType();
+        trainingType.setName(trainerRequest.getTrainingType());
+        trainingTypeRepo.save(trainingType);
+
+        // Создание и сохранение объекта Trainer
         Trainer trainer1 = Trainer.builder()
-                .user(user).trainingType(trainingType)
+                .user(user)
+                .trainingType(trainingType)
                 .build();
-        trainer1.setTrainingType(trainingType);
         trainerRepo.save(trainer1);
-        return new UserDto(
-                trainer1.getUser().getUserName(),
-                trainer1.getUser().getPassword()
-        );
+
+        String token = jwtService.generateToken(user);
+        return AuthenticationResponse.builder().
+                token(token)
+                .userName(user.getUsername())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .build();
     }
 
     @Override
-    public String update(long id, TrainerRequest trainerRequest) {
-        Trainer trainer1 = trainerRepo.findById(id).orElseThrow(
-                ()-> new NoSuchElementException
-                        (String.format("Trainer with such and id %d doesnt exist",id)));
-        trainer1.getUser().setFirstName(trainerRequest.getFirstName());
-        trainer1.getUser().setLastName(trainerRequest.getLastName());
+    public TrainerProfileRes update(TrainerUpdateRequest trainer) {
+        Trainer trainer1 = trainerRepo.findTrainerByUsername(trainer.getUserName());
+        User user = trainer1.getUser();
+        user.setUserName(trainer.getUserName());
+        user.setFirstName(trainer.getFirstName());
+        user.setLastName(trainer.getLastName());
+        user.setActive(trainer.getIsActive());
         trainerRepo.save(trainer1);
-        return "customer with id" + trainer1.getId() + " successfully updated";};
+        return new TrainerProfileRes(
+                trainer1.getUser().getUsername(),
+                trainer1.getUser().getFirstName(),
+                trainer1.getUser().getLastName(),
+                trainer1.getUser().isActive(),
+                trainer1.getTrainerTrainees(),
+                trainer1.getTrainingType().getName()
+                );
+    }
 
         @Override
     public TrainerResponse getByUserName(String userName) {
@@ -68,7 +97,7 @@ public class TrainerServiceImpl implements TrainerService {
                trainer.getUser().getFirstName(),
                trainer.getUser().getLastName(),
                trainer.getTrainingType(),
-               trainer.getUser().getUserName(),
+               trainer.getUser().getUsername(),
                trainer.getUser().getPassword(),
                trainer.getUser().isActive()
        );
@@ -76,18 +105,55 @@ public class TrainerServiceImpl implements TrainerService {
 
 
     @Override
-    public SimpleResponse delete(long id) {
-        trainerRepo.deleteById(id);
-        return new SimpleResponse("Trainer with id " + id + " successfully deleted", HttpStatus.OK);
+    public SimpleResponse delete(String userName) {
+        Trainer trainer = trainerRepo.findTrainerByUsername(userName);
+        if (trainer!=null) {
+            trainerRepo.delete(trainer);
+            return new SimpleResponse("Trainer successfully deleted", HttpStatus.OK);
+        }else {
+            return new SimpleResponse("Trainer by userName: "+userName+" not found",HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
-    public SimpleResponse updateIsActivityOrDeActiveByUserName(String userName, boolean isActive) {
-            trainerRepo.updateIsActivityByUserName(userName,isActive);
-        return new SimpleResponse("Trainer IsActivity successfully updated", HttpStatus.OK);    }
+    public Login updateIsActivityOrDeActiveByUserName(String userName, boolean isActive) {
+        Trainer trainer = trainerRepo.findTrainerByUsername(userName);
+        trainerRepo.updateIsActivityByUserName(userName, isActive);
+        trainerRepo.save(trainer);
+        return new Login(trainer.getUser().getUsername(),trainer.getUser().isActive());
+    }
 
     @Override
-    public SimpleResponse updatePasswordTrainer(String userName, String password) {
-            trainerRepo.updatePasswordTrainer(userName,password);
+    public SimpleResponse updatePasswordTrainer(LoginChange change) {
+            trainerRepo.updatePasswordTrainer(change.getUsername(),change.getNewPassword());
         return new SimpleResponse("Trainer password successfully updated", HttpStatus.OK);    }
+
+    @Override
+    public SimpleResponse loginTrainee(String userName, String password) {
+       Trainer trainer= trainerRepo.trainerPasswordChange(userName,password);
+        if (trainer != null) {
+            User user =trainer.getUser();
+            if (user.getPassword().equals(trainer.getUser().getPassword())||user.getUsername().equals(userName)) {
+                return SimpleResponse.builder()
+                        .status(HttpStatus.OK)
+                        .message("Username and Password correct!")
+                        .build();
+            } else {
+                return SimpleResponse.builder()
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .message("Incorrect password")
+                        .build();
+            }
+        } else {
+            return SimpleResponse.builder()
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .message("Incorrect username")
+                    .build();
+        }
+    }
+
+    @Override
+    public List<TrainingType> getAllTrainingType() {
+        return trainingTypeRepo.getAllTrainingTypes();
+    }
 }

@@ -1,4 +1,4 @@
-package gym.dto;
+package gym.dto.trainee;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public class TraineeResponse {
     private String password;
     private String address;
     private LocalDate dateOfBirth;
-    boolean isActive;
+    private boolean isActive;
 
     public TraineeResponse(Long id,String userName,String address, LocalDate dateOfBirth) {
         Id = id;
@@ -34,18 +34,5 @@ public class TraineeResponse {
         this.address = address;
         this.dateOfBirth = dateOfBirth;
         this.isActive = isActive;
-    }
-
-    public TraineeResponse(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
-    }
-
-    @Override
-    public String toString() {
-        return "TraineeResponse{" +
-                "userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 }

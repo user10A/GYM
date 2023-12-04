@@ -1,4 +1,4 @@
-package gym.dto;
+package gym.dto.training;
 import lombok.Data;
 import java.time.LocalDate;
 

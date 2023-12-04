@@ -1,6 +1,5 @@
 package gym.repo;
 
-import gym.model.Trainee;
 import gym.model.Training;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

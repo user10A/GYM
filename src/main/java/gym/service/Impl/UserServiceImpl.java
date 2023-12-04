@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     public boolean usernameExists(String username) {
         AtomicBoolean exists = new AtomicBoolean(false);
         getAll().forEach(user -> {
-            if (user.getUserName() != null && user.getUserName().equals(username)) {
+            if (user.getUsername() != null && user.getUsername().equals(username)) {
                 exists.set(true);
             }
         });

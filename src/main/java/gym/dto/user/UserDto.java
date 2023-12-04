@@ -1,4 +1,4 @@
-package gym.dto;
+package gym.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
