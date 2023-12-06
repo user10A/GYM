@@ -3,6 +3,7 @@ import gym.config.jwt.JwtService;
 import gym.dto.trainee.TrainerUpdateRequest;
 import gym.dto.trainer.TrainerProfileRes;
 import gym.dto.trainer.TrainerRequest;
+import gym.dto.trainer.TrainerRequest2;
 import gym.dto.trainer.TrainerResponse;
 import gym.dto.user.*;
 import gym.enums.Role;
@@ -11,12 +12,14 @@ import gym.model.TrainingType;
 import gym.model.User;
 import gym.repo.TrainerRepo;
 import gym.repo.TrainingTypeRepo;
+import gym.repo.UserRepo;
 import gym.service.TrainerService;
 import gym.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +31,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepo trainerRepo;
-    private final UserService userRepo;
+    private final UserRepo userRepository;
     private final TrainingTypeRepo trainingTypeRepo;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -39,16 +42,14 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public AuthenticationResponse saveCustomer(TrainerRequest trainerRequest) {
+    public AuthenticationResponse signUp(TrainerRequest2 trainerRequest) {
         User user = new User();
         user.setFirstName(trainerRequest.getFirstName());
         user.setLastName(trainerRequest.getLastName());
-
-        user.setPassword(userRepo.generatePassword());
-        user.setUserName(userRepo.generateUsername(trainerRequest.getFirstName(), trainerRequest.getLastName()));
-        // Сохранение пользователя
-        userRepo.save(user);
-
+        user.setPassword(passwordEncoder.encode(trainerRequest.getPassword()));
+        user.setRole(Role.TRAINER);
+        user.setEmail(trainerRequest.getEmail());
+        userRepository.save(user);
         // Создание и сохранение объекта TrainingType
         TrainingType trainingType = new TrainingType();
         trainingType.setName(trainerRequest.getTrainingType());
@@ -64,23 +65,23 @@ public class TrainerServiceImpl implements TrainerService {
         String token = jwtService.generateToken(user);
         return AuthenticationResponse.builder().
                 token(token)
-                .userName(user.getUsername())
-                .password(user.getPassword())
+                .email(user.getEmail())
+                .password(trainerRequest.getPassword())
                 .role(user.getRole())
                 .build();
     }
 
     @Override
     public TrainerProfileRes update(TrainerUpdateRequest trainer) {
-        Trainer trainer1 = trainerRepo.findTrainerByUsername(trainer.getUserName());
+        Trainer trainer1 = trainerRepo.findTrainerByEmail(trainer.getEmail());
         User user = trainer1.getUser();
-        user.setUserName(trainer.getUserName());
+        user.setEmail(trainer.getEmail());
         user.setFirstName(trainer.getFirstName());
         user.setLastName(trainer.getLastName());
         user.setActive(trainer.getIsActive());
         trainerRepo.save(trainer1);
         return new TrainerProfileRes(
-                trainer1.getUser().getUsername(),
+                trainer1.getUser().getEmail(),
                 trainer1.getUser().getFirstName(),
                 trainer1.getUser().getLastName(),
                 trainer1.getUser().isActive(),
@@ -90,14 +91,14 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
         @Override
-    public TrainerResponse getByUserName(String userName) {
-       Trainer trainer = trainerRepo.findTrainerByUsername(userName);
+    public TrainerResponse getByEmail(String email) {
+       Trainer trainer = trainerRepo.findTrainerByEmail(email);
        return new TrainerResponse(
                trainer.getId(),
                trainer.getUser().getFirstName(),
                trainer.getUser().getLastName(),
                trainer.getTrainingType(),
-               trainer.getUser().getUsername(),
+               trainer.getUser().getEmail(),
                trainer.getUser().getPassword(),
                trainer.getUser().isActive()
        );
@@ -105,51 +106,47 @@ public class TrainerServiceImpl implements TrainerService {
 
 
     @Override
-    public SimpleResponse delete(String userName) {
-        Trainer trainer = trainerRepo.findTrainerByUsername(userName);
+    public SimpleResponse delete(String email) {
+        Trainer trainer = trainerRepo.findTrainerByEmail(email);
         if (trainer!=null) {
             trainerRepo.delete(trainer);
             return new SimpleResponse("Trainer successfully deleted", HttpStatus.OK);
         }else {
-            return new SimpleResponse("Trainer by userName: "+userName+" not found",HttpStatus.NOT_FOUND);
+            return new SimpleResponse("Trainer by userName: "+email+" not found",HttpStatus.NOT_FOUND);
         }
     }
 
     @Override
-    public Login updateIsActivityOrDeActiveByUserName(String userName, boolean isActive) {
-        Trainer trainer = trainerRepo.findTrainerByUsername(userName);
-        trainerRepo.updateIsActivityByUserName(userName, isActive);
+    public Login updateIsActivityOrDeActiveByUserName(String email, boolean isActive) {
+        Trainer trainer = trainerRepo.findTrainerByEmail(email);
+        trainerRepo.updateIsActivityByEmail(email, isActive);
         trainerRepo.save(trainer);
-        return new Login(trainer.getUser().getUsername(),trainer.getUser().isActive());
+        return new Login(trainer.getUser().getEmail(),trainer.getUser().isActive());
     }
 
     @Override
     public SimpleResponse updatePasswordTrainer(LoginChange change) {
-            trainerRepo.updatePasswordTrainer(change.getUsername(),change.getNewPassword());
+            trainerRepo.updatePasswordTrainer(change.getEmail(),change.getNewPassword());
         return new SimpleResponse("Trainer password successfully updated", HttpStatus.OK);    }
 
     @Override
-    public SimpleResponse loginTrainee(String userName, String password) {
-       Trainer trainer= trainerRepo.trainerPasswordChange(userName,password);
-        if (trainer != null) {
-            User user =trainer.getUser();
-            if (user.getPassword().equals(trainer.getUser().getPassword())||user.getUsername().equals(userName)) {
-                return SimpleResponse.builder()
-                        .status(HttpStatus.OK)
-                        .message("Username and Password correct!")
-                        .build();
-            } else {
-                return SimpleResponse.builder()
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .message("Incorrect password")
-                        .build();
-            }
-        } else {
-            return SimpleResponse.builder()
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .message("Incorrect username")
-                    .build();
+    public AuthenticationResponse signIn(UserCheckRequest request) {
+        User user = userRepository.getUserByEmail(request.getEmail()).orElseThrow(
+                () -> new NoSuchElementException(
+                        "user with email: " + request.getEmail() + " not fount"));
+        if (request.getEmail().isBlank()) {
+            throw new BadCredentialsException("email is blank");
         }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("wrong password");
+        }
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder().
+                token(jwtToken)
+                .email(user.getEmail())
+                .role(user.getRole())
+                .password(user.getPassword())
+                .build();
     }
 
     @Override

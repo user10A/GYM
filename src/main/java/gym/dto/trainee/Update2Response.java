@@ -16,8 +16,8 @@ public class Update2Response {
     private List<TrainerInfo> trainersInfo;
 
 
-    public Update2Response(String firstName, String lastName, String userName, String trainingType) {
-        this.trainersInfo = List.of(new TrainerInfo(firstName, lastName, userName, trainingType));
+    public Update2Response(String firstName, String lastName, String email, String trainingType) {
+        this.trainersInfo = List.of(new TrainerInfo(firstName, lastName, email, trainingType));
     }
 
     public Update2Response(List<Update2Response> updateResponses) {

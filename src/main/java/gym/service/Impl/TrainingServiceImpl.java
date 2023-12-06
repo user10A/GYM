@@ -12,6 +12,7 @@ import gym.repo.TrainingRepo;
 import gym.repo.TrainingTypeRepo;
 import gym.service.TrainingService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,15 +24,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
-    @Autowired
-    private TrainingRepo trainingRepo;
-    @Autowired
-    private TraineeRepo traineeRepo;
-    @Autowired
-    private TrainerRepo trainerRepo;
-    @Autowired
-    private TrainingTypeRepo trainingTypeRepo;
+    private final TrainingRepo trainingRepo;
+    private final TraineeRepo traineeRepo;
+    private final TrainerRepo trainerRepo;
     @Override
     public List<Training> getAllTraining() {
         return trainingRepo.findAll();
@@ -39,8 +36,8 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public SimpleResponse addTraining(TrainingRequest addTrainingRequest) {
-        Trainee trainee = traineeRepo.findTraineeByUsername(addTrainingRequest.getTraineeName());
-        Trainer trainer = trainerRepo.findTrainerByUsername(addTrainingRequest.getTrainerName());
+        Trainee trainee = traineeRepo.findTraineeByEmail(addTrainingRequest.getTraineeEmail());
+        Trainer trainer = trainerRepo.findTrainerByEmail(addTrainingRequest.getTrainerEmail());
         Training training = new Training();
         training.setTrainee(trainee);
         training.setTrainer(trainer);
@@ -71,8 +68,8 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public String update(long id, TrainingRequest training) {
-        Trainee trainee = traineeRepo.findTraineeByUsername(training.getTraineeName());
-        Trainer trainer = trainerRepo.findTrainerByUsername(training.getTrainerName());
+        Trainee trainee = traineeRepo.findTraineeByEmail(training.getTraineeEmail());
+        Trainer trainer = trainerRepo.findTrainerByEmail(training.getTrainerEmail());
         Training training1 =trainingRepo.findById(id).orElseThrow(()-> new NoSuchElementException("Training not found by id"+id));
         training1.setTrainingName(training.getTrainingName());
         training1.setDate(training.getDate());
@@ -83,13 +80,13 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public Training getByTraineeName(String name) {
-        return trainingRepo.findTraineeByUsername(name);
+    public Training getByTraineeEmail(String email) {
+        return trainingRepo.findTraineeByEmail(email);
     }
 
     @Override
-    public Training getByTrainerName(String name) {
-        return trainingRepo.findTrainerByUsername(name);
+    public Training getByTrainerEmail(String email) {
+        return trainingRepo.findTrainerByEmail(email);
     }
 
     @Override
@@ -110,7 +107,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public List<TrainerProfileRes2> getNotAssignedTrainers(FreeRequest freeRequest) {
-        String traineeUsername = freeRequest.getUserName();
+        String traineeUsername = freeRequest.getEmail();
         Trainee trainee = traineeRepo.findTraineeByUserUsername(traineeUsername);
         List<Trainer> trainers = trainerRepo.findActiveTrainer();
 
@@ -123,7 +120,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         return notAssigned.stream().map(
                 trainer -> new TrainerProfileRes2(
-                        trainer.getUser().getUsername(),
+                        trainer.getUser().getEmail(),
                         trainer.getUser().getFirstName(),
                         trainer.getUser().getLastName(),
                         trainer.getTrainingType().getName(),

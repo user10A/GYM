@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class TrainerProfileRes {
 
-    private String userName;
+    private String email;
     private String firstName;
     private String lastName;
     private Boolean isActive;
@@ -30,8 +30,8 @@ public class TrainerProfileRes {
     }
 
 
-    public TrainerProfileRes(String userName, String firstName, String lastName, boolean active, List<Trainee> trainees, String trainingType) {
-        this.userName=userName;
+    public TrainerProfileRes(String email, String firstName, String lastName, boolean active, List<Trainee> trainees, String trainingType) {
+        this.email=email;
         this.firstName=firstName;
         this.lastName=lastName;
         this.isActive=active;

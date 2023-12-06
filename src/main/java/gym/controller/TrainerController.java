@@ -2,11 +2,13 @@ package gym.controller;
 import gym.dto.trainee.TrainerUpdateRequest;
 import gym.dto.trainer.TrainerProfileRes;
 import gym.dto.trainer.TrainerRequest;
+import gym.dto.trainer.TrainerRequest2;
 import gym.dto.trainer.TrainerResponse;
 import gym.dto.user.*;
 import gym.model.TrainingType;
 import gym.repo.TrainerRepo;
 import gym.service.TrainerService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +29,16 @@ public class TrainerController {
     public List<TrainerResponse> getAllCustomers(){
         return trainerService.getAllTrainers();
     }
-    @PostMapping("/create")
-    public AuthenticationResponse save(@RequestBody TrainerRequest customer){
-        return trainerService.saveCustomer(customer);
+    @PermitAll
+    @PostMapping("/signUp")
+    public AuthenticationResponse signUp(@RequestBody TrainerRequest2 trainer){
+        return trainerService.signUp(trainer);
     }
 
 
     @DeleteMapping("/delete")
-    public SimpleResponse delete(@RequestParam String userName){
-        return trainerService.delete(userName);
+    public SimpleResponse delete(@RequestParam String email){
+        return trainerService.delete(email);
     }
 
     @PutMapping("/update")
@@ -44,24 +47,25 @@ public class TrainerController {
     }
 
     @GetMapping("/get")
-    public TrainerResponse getByUserName(@RequestParam String username){
-        return trainerService.getByUserName(username);
+    public TrainerResponse getTrainerByEmail(@RequestParam String username){
+        return trainerService.getByEmail(username);
     }
 
     @PostMapping("isActivity")
-    public Login updateIsActivityByUserName(@RequestParam("userName") String userName, @RequestParam("isActive") boolean isActive){
+    public Login updateIsActivityByUserName(@RequestParam("email") String userName, @RequestParam("isActive") boolean isActive){
         return trainerService.updateIsActivityOrDeActiveByUserName(userName,isActive);
     }
     @PostMapping("update-password")
     public SimpleResponse updatePasswordByUserName(@RequestParam LoginChange loginChange){
-        String username = loginChange.getUsername();
+        String username = loginChange.getEmail();
         String newPassword = loginChange.getNewPassword();
         trainerRepo.updatePasswordTrainer(username, newPassword);
         return new SimpleResponse("200 OK", HttpStatus.OK);
     }
-    @GetMapping("/check-credentials")
-    public SimpleResponse login(@RequestParam("userName") String userName, @RequestParam("password")String password){
-        return trainerService.loginTrainee(userName,password);
+    @PermitAll
+    @GetMapping("/signIn")
+    public AuthenticationResponse signIn(@RequestBody UserCheckRequest request){
+        return trainerService.signIn(request);
     }
     @GetMapping("trainingTypes")
     public List<TrainingType> getAllTrainingTypes(){

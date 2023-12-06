@@ -17,8 +17,8 @@ public interface TrainingService {
 
     String update(long id, TrainingRequest training);
 
-    Training getByTraineeName(String name);
-    Training getByTrainerName(String name);
+    Training getByTraineeEmail(String email);
+    Training getByTrainerEmail(String email);
     Training getByDurationAndDate(int moth ,LocalDate date);
     SimpleResponse delete(long id);
     Training findByTrainingName(String name);

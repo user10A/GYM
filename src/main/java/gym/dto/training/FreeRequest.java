@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FreeRequest {
-    private String userName;
+    private String email;
 }

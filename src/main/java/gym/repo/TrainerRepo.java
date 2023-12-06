@@ -13,21 +13,21 @@ import java.util.List;
 public interface TrainerRepo extends JpaRepository<Trainer,Long> {
     @Query("select trainer.id,trainer.user.firstName,trainer.user.lastName, trainer.trainingType from Trainer trainer")
     List<TrainerResponse> findAllTrainers();
-    @Query("SELECT t FROM Trainer t JOIN t.user u WHERE u.userName = :userName")
-    Trainer findTrainerByUsername(@Param("userName") String userName);
+    @Query("SELECT t FROM Trainer t JOIN t.user u WHERE u.email = :email")
+    Trainer findTrainerByEmail(@Param("email") String email);
     @Modifying
-    @Query("UPDATE User u SET u.isActive = :isActive WHERE u.userName = :userName")
-    void updateIsActivityByUserName(@Param("userName") String userName, @Param("isActive") boolean isActive);
+    @Query("UPDATE User u SET u.isActive = :isActive WHERE u.email = :email")
+    void updateIsActivityByEmail(@Param("email") String email, @Param("isActive") boolean isActive);
 
     @Modifying
-    @Query("UPDATE User u SET u.password = :password WHERE u.userName = :userName")
-    void updatePasswordTrainer(@Param("userName") String userName ,@Param("password")String password);
-    @Query("Select u  from Trainee u where u.user.userName = :userName and  u.user.password = :password")
-    Trainer trainerPasswordChange(@Param("userName") String userName ,@Param("password")String password);
+    @Query("UPDATE User u SET u.password = :password WHERE u.email = :email")
+    void updatePasswordTrainer(@Param("email") String email ,@Param("password")String password);
+    @Query("Select u  from Trainee u where u.user.email = :email and  u.user.password = :password")
+    Trainer trainerPasswordChange(@Param("email") String email ,@Param("password")String password);
 //    @Query("select t  from Trainer t")
 //    List<Trainer>getAllByTraineeTrainers();
-    @Query("select t from Trainer t join t.user u where u.userName in :usernames")
-    List<Trainer> findByTrainerUserNameIn(@Param("usernames") List<String> usernames);
+    @Query("select t from Trainer t join t.user u where u.email in :emails")
+    List<Trainer> findByTrainerUserNameIn(@Param("emails") List<String> emails);
     @Query("SELECT t FROM Trainer t WHERE t.user.isActive = false ")
     List<Trainer> findActiveTrainer();
 }

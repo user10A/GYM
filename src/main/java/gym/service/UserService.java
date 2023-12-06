@@ -2,6 +2,7 @@ package gym.service;
 import gym.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -13,4 +14,6 @@ public interface UserService {
     List<User> getAll();
 
     void save(User user);
+    Optional<User> getUserByEmail(String email);
+    boolean existsByEmail(String email);
 }

@@ -6,6 +6,6 @@ import java.time.LocalDate;
 public class TrainingRequest {
     private String trainingName;
     private LocalDate date;
-    private String traineeName;
-    private String trainerName;
+    private String traineeEmail;
+    private String trainerEmail;
 }

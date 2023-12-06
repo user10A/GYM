@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class LoginChange {
 
-    private String username;
+    private String email;
     private String oldPassword;
     private String newPassword;
 

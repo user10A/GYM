@@ -10,8 +10,8 @@ import java.util.List;
 @Setter
 public class UpdateRequest2 {
 
-    private List<String> usernames;
-    private String traineeUsername;
+    private List<String> emails;
+    private String traineeEmail;
 
 
 }

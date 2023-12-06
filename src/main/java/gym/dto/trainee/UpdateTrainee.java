@@ -13,8 +13,8 @@ public class UpdateTrainee {
 
     private List<TraineeRequestUpdateList> traineeRequestUpdateLists;
 
-    public UpdateTrainee(String firstName, String lastName, String userName, String address, LocalDate dateOfBirth) {
-        this.traineeRequestUpdateLists = List.of(new TraineeRequestUpdateList(firstName, lastName, userName, address, dateOfBirth));
+    public UpdateTrainee(String firstName, String lastName, String email, String address, LocalDate dateOfBirth) {
+        this.traineeRequestUpdateLists = List.of(new TraineeRequestUpdateList(firstName, lastName, email, address, dateOfBirth));
     }
     public UpdateTrainee(List<UpdateTrainee> updateResponses) {
         this.traineeRequestUpdateLists = updateResponses.stream()

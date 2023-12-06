@@ -8,13 +8,13 @@ import lombok.Setter;
 public class TrainerInfo {
         private String firstName;
         private String lastName;
-        private String userName;
+        private String email;
         private String trainingType;
 
-        public TrainerInfo(String firstName, String lastName, String userName, String trainingType) {
+        public TrainerInfo(String firstName, String lastName, String email, String trainingType) {
             this.firstName = firstName;
              this.lastName = lastName;
-            this.userName = userName;
+            this.email = email;
             this.trainingType = trainingType;
         }
     }

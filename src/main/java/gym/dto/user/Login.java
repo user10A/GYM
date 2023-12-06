@@ -6,11 +6,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Login {
-    private String userName;
+    private String email;
     private boolean isActive;
 
-    public Login(String userName, boolean isActive) {
-        this.userName = userName;
+    public Login(String email, boolean isActive) {
+        this.email = email;
         this.isActive = isActive;
     }
 }

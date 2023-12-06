@@ -5,6 +5,7 @@ import gym.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,6 +60,15 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
     }
 
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return false;
+    }
 
 
 }

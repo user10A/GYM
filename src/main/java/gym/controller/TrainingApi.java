@@ -17,8 +17,7 @@ import java.util.List;
 @RequestMapping("/training")
 @RequiredArgsConstructor
 public class TrainingApi {
-    @Autowired
-    private TrainingService trainingService;
+    private final TrainingService trainingService;
 
     @GetMapping
     public List<Training> getAllTrainings(){

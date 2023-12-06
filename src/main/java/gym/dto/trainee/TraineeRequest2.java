@@ -1,19 +1,17 @@
 package gym.dto.trainee;
-
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDate;
-import java.util.Date;
 
 
 @Getter
 @Setter
-public class UpdateRequest {
-    private String address;
-    private LocalDate dateOfBirth;
+public class TraineeRequest2 {
     private String firstName;
     private String lastName;
     private String email;
-    private Boolean isActive;
+    private String password;
+    private String address;
+    private LocalDate dateOfBirth;
+
 }

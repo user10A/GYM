@@ -12,14 +12,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TrainerProfileRes2 {
-    private String userName;
+    private String email;
     private String firstName;
     private String lastName;
     private Boolean isActive;
     private String trainingType;
 
     public TrainerProfileRes2(User user, Trainer trainer) {
-        this.userName = user.getUsername();
+        this.email = user.getUsername();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.isActive = user.isActive();
@@ -28,8 +28,8 @@ public class TrainerProfileRes2 {
 
 
 
-    public TrainerProfileRes2(String userName, String firstName, String lastName, String trainingType, boolean active) {
-        this.userName=userName;
+    public TrainerProfileRes2(String email, String firstName, String lastName, String trainingType, boolean active) {
+        this.email=email;
         this.firstName=firstName;
         this.lastName=lastName;
        this.trainingType=trainingType;

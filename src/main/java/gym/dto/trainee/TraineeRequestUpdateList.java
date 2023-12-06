@@ -13,22 +13,22 @@ import java.time.LocalDate;
 public class TraineeRequestUpdateList {
     private String firstName;
     private String lastName;
-    private String userName;
+    private String email;
     private String address;
     private LocalDate dateOfBirth;
 
     public TraineeRequestUpdateList(User user, Trainee trainee) {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.userName = user.getUsername();
+        this.email = user.getUsername();
         this.address = trainee.getAddress();
         this.dateOfBirth = trainee.getDateOfBirth();
     }
 
-    public TraineeRequestUpdateList(String firstName, String lastName, String userName, String address, LocalDate dateOfBirth) {
+    public TraineeRequestUpdateList(String firstName, String lastName, String email, String address, LocalDate dateOfBirth) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userName = userName;
+        this.email = email;
         this.address = address;
         this.dateOfBirth = dateOfBirth;
     }

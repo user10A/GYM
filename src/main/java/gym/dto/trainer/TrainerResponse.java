@@ -13,36 +13,36 @@ public class TrainerResponse {
     private String firstName;
     private String lastName;
     private String trainingType;
-    private String userName;
+    private String email;
     private String password;
     boolean isActive;
 
 
-    public TrainerResponse(Long id, String trainingType, String userName, TrainingType type, String name, String password, boolean active) {
+    public TrainerResponse(Long id, String trainingType, String email, TrainingType type, String name, String password, boolean active) {
         this.id = id;
         this.trainingType = trainingType;
-        this.userName = userName;
+        this.email = email;
     }
 
-    public TrainerResponse(Long id, String firstName, String lastName, String trainingType, String userName, String password, boolean isActive) {
+    public TrainerResponse(Long id, String firstName, String lastName, String trainingType, String email, String password, boolean isActive) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.trainingType = trainingType;
-        this.userName = userName;
+        this.email = email;
         this.password = password;
         this.isActive = isActive;
     }
 
-    public TrainerResponse(String userName, String password) {
-        this.userName = userName;
+    public TrainerResponse(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
     @Override
     public String toString() {
         return "TrainerResponse{" +
-                "userName='" + userName + '\'' +
+                "userName='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

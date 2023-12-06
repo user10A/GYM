@@ -8,15 +8,15 @@ import java.util.List;
 
 public interface TraineeService {
 
-    List<TraineeResponse> getAllCustomers();
-    AuthenticationResponse saveCustomer(TraineeRequest2 customer);
+    List<TraineeResponse> getAllTrainee();
+    AuthenticationResponse signUp(TraineeRequest2 customer);
 
     TraineeResponse update(UpdateRequest trainee);
-    TraineeResponse getByUserName(String UserName);
+    TraineeResponse getByEmail(String email);
 
-    SimpleResponse delete(String userName);
-    Login updateIsActivityOrDeActiveByUserName(String userName, boolean isActive);
+    SimpleResponse delete(String email);
+    Login updateIsActivityOrDeActiveByUserName(String email, boolean isActive);
     SimpleResponse updatePasswordTrainee(LoginChange change);
-    SimpleResponse logonTrainee(String userName, String password);
+    AuthenticationResponse signIn(UserCheckRequest request);
     Update2Response updateTrainersList(UpdateRequest2 updateRequest);
 }

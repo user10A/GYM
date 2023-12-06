@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 @Repository
 public interface TrainingRepo extends JpaRepository<Training,Long > {
-    @Query("SELECT t FROM Training t JOIN t.trainee.user u WHERE u.userName = :username")
-    Training findTraineeByUsername(@Param("username") String username);
-    @Query("SELECT t FROM Training t JOIN t.trainer.user u WHERE u.userName = :username")
-    Training findTrainerByUsername(@Param("username") String username);
+    @Query("SELECT t FROM Training t JOIN t.trainee.user u WHERE u.email = :email")
+    Training findTraineeByEmail(@Param("email") String email);
+    @Query("SELECT t FROM Training t JOIN t.trainer.user u WHERE u.email = :email")
+    Training findTrainerByEmail(@Param("email") String email);
     @Query("SELECT t FROM Training t WHERE t.duration = :duration AND t.date = :date")
     Training findTrainingByDurationAndDate(@Param("duration") int duration, @Param("date") LocalDate date);
 
